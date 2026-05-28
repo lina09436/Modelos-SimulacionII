@@ -13,7 +13,6 @@ Clasificación binaria de eventos del bosón de Higgs usando el dataset HIGGS de
 | Archivo | Descripción |
 |---------|-------------|
 | `ProyectoModelos2.pdf` | Informe final del proyecto (IEEE Transactions, ≤10 páginas) |
-| `ProyectoFinalModSimPrimerReporte.pdf` | Primer informe de avance (secciones 1-3) |
 | `Video.mov` | Video de sustentación (10 minutos) |
 | `Modelos/` | Notebooks de Jupyter con el pipeline completo |
 
