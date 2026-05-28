@@ -42,7 +42,6 @@ Ejecutar en este orden:
 | `03_modelos_DNN_Baldi.ipynb` | Intento de replicación Baldi et al. (no usado en informe) |
 | `03_modelos_final.ipynb` | Ensamblaje: tabla comparativa y top-2 |
 | `04_reduccion_dimension.ipynb` | Análisis d', selección de features, PCA, UMAP |
-| `04_analisis_avanzado.ipynb` | Análisis exploratorio avanzado (no incluido en informe) |
 | `05_conclusiones.ipynb` | Tabla maestra, comparación literatura, conclusiones |
 
 ## Resultados principales
