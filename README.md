@@ -52,23 +52,84 @@ Ejecutar en este orden:
 - **Mejor modelo:** Red Neuronal MLP (128, 64) y XGBoost — ambos AUC = 0.826 en test
 - **Reducción de dimensionalidad:** Selección por d' (28→21, ΔAUC = −0.002) >> PCA (23 comp, ΔAUC = −0.04) >> UMAP (16 comp, ΔAUC = −0.17)
 
-## Ejecución
+## Guía de ejecución
 
-Los notebooks están diseñados para Google Colab con datos en Google Drive:
+### Requisitos previos
 
+1. Cuenta de Google con acceso a **Google Colab**
+2. Espacio en Google Drive (≥5 GB libres para el dataset y artefactos)
+3. Cuenta de **wandb** (weights & biases) para registrar experimentos
+4. Cuenta de **GitHub** con acceso a este repositorio
+
+### Paso 1: Configurar Google Drive
+
+Crear la carpeta de trabajo en Google Drive:
+
+```
+MiDrive/ProyectoHIGGS/
+```
+
+Todos los notebooks leen y escriben en esta ruta:
 ```python
 DRIVE_PATH = '/content/drive/MyDrive/ProyectoHIGGS/'
 ```
 
-`01_EDA.ipynb` descarga el dataset de UCI (~2.6 GB) y genera los artefactos que los demás notebooks cargan. Ejecutar primero y en orden.
+### Paso 2: Abrir notebooks en Colab
 
-### Dependencias
+En Google Colab: `Archivo` → `Abrir notebook` → `GitHub` → pegar URL del repositorio.
 
+Alternativa: clonar este repositorio en Google Colab:
+```python
+!git clone https://github.com/lina09436/Modelos-SimulacionII.git
 ```
-pandas==2.2.2, numpy==1.26.4, scipy==1.13.0, scikit-learn==1.4.2
-umap-learn==0.5.6, matplotlib==3.8.4, seaborn==0.13.2, gdown==5.2.0
-xgboost, lightgbm, catboost, wandb
-```
+
+### Paso 3: Ejecutar en orden
+
+Los notebooks **deben ejecutarse secuencialmente** porque cada uno consume artefactos generados por el anterior:
+
+| Orden | Notebook | Tiempo estimado | Genera |
+|-------|----------|-----------------|--------|
+| **1** | `01_EDA.ipynb` | 10-20 min | Descarga HIGGS (~2.6 GB), genera `X_train.npy`, `X_val.npy`, `X_test.npy`, `y_*.npy`, `feature_names.npy` |
+| **2** | `02_estado_del_arte.ipynb` | — | Independiente. Solo markdown, no requiere datos |
+| **3** | `03_modelos_*.ipynb` (10 notebooks) | 2-25 min c/u | Cada uno guarda `resultado_*.csv` y `modelo_*.pkl` en Drive |
+| **4** | `03_modelos_final.ipynb` | 2 min | `tabla_comparativa_modelos.csv`, `top2_modelos.npy` |
+| **5** | `04_reduccion_dimension.ipynb` | 20-30 min | `tabla_comparativa_reduccion.csv`, tablas PCA/UMAP |
+| **6** | `05_conclusiones.ipynb` | 5 min | `tabla_maestra.csv`, `tabla_comparacion_literatura.csv` |
+
+> **Nota:** Los 10 notebooks `03_modelos_*` son independientes entre sí. Se pueden ejecutar en paralelo abriendo varias pestañas de Colab para acelerar el proceso.
+
+### Artefactos generados (Drive)
+
+| Archivo | Generado por | Consumido por |
+|---------|-------------|---------------|
+| `X_train.npy`, `X_val.npy`, `X_test.npy` | `01_EDA` | `03_*`, `04_*` |
+| `y_train.npy`, `y_val.npy`, `y_test.npy` | `01_EDA` | `03_*`, `04_*` |
+| `feature_names.npy` | `01_EDA` | `03_*`, `04_*` |
+| `resultado_*.csv` | Cada `03_modelos_*` | `03_modelos_final` |
+| `modelo_*.pkl` | Cada `03_modelos_*` | `04_reduccion_dimension` |
+| `tabla_comparativa_modelos.csv` | `03_modelos_final` | `04_*`, `05_*` |
+| `top2_modelos.npy` | `03_modelos_final` | `04_reduccion_dimension` |
+| `tabla_comparativa_reduccion.csv` | `04_reduccion_dimension` | `05_conclusiones` |
+
+### Configuración de wandb
+
+Cada notebook de `03_modelos_*` registra experimentos en wandb. Para usar tu propia cuenta:
+
+1. Crear cuenta en [wandb.ai](https://wandb.ai)
+2. Obtener API key en [wandb.ai/authorize](https://wandb.ai/authorize)
+3. En Colab, guardar la key como secreto: `WANDB_API_KEY`
+4. O reemplazar `wandb.login(key=userdata.get('WANDB_API_KEY'))` por `wandb.login(key="tu-api-key")`
+
+Si no se desea usar wandb, comentar las líneas `wandb.init()`, `wandb.log()` y `wandb.finish()` en cada notebook.
+
+### Modelos que requieren más RAM/tiempo
+
+| Modelo | Recurso | Solución |
+|--------|---------|----------|
+| KNN | 100K muestras (submuestreo automático) | Ya optimizado en el notebook |
+| XGBoost, LightGBM, CatBoost | ~20-25 min c/u | Ejecutar en paralelo en pestañas separadas |
+| UMAP (en `04_reduccion_dimension`) | Ajuste en 200K muestras | Ya optimizado; ~10 min |
+| Todos los demás | ≤15 min | RAM gratuita de Colab suficiente |
 
 ## Referencias
 
